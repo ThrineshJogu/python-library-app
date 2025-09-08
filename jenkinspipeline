@@ -1,0 +1,41 @@
+jenkins pipeline 
+
+
+pipeline {
+    agent any
+    stages {
+        stage('code') {
+            steps {
+                git branch: 'master', url: 'https://github.com/ThrineshJogu/python-library-app.git'
+            }
+        }
+        stage('image'){
+            steps{
+                sh'''
+                docker build -t dbimage .
+                docker build -t authimage .
+                docker build -t bookimage .
+                docker build -t borrowimage .
+                docker build -t appimage .
+                docker network create mynet
+                '''
+            }
+        }
+        stage('container'){
+            steps{
+            sh'''
+            docker run -d --name db -p 3306:3306 --network mynet dbimage
+            docker run -itd --name auth_service --network mynet -p 5001:5001 authimage
+            docker run -itd --name book_service -p 5002:5002 --network mynet bookimage
+            docker run -itd --name borrow_service -p 5003:5003 --network mynet borrowimage
+            docker run -itd --name frontend -p 5000:5000 --network mynet appimage
+            '''
+            }
+        }
+    }
+    post{
+        always{
+            echo "pipeline completed"
+        }
+    }
+}
