@@ -1,0 +1,51 @@
+version: "3"
+services:
+  db:
+    container_name: db
+    build: ./database   
+      - "3306:3306"
+    volumes:
+      - db-volume:/var/lib/mysql
+    networks:
+      - my-net
+
+  auth:
+    container_name: auth_service
+    build: ./auth
+    ports:
+      - "5001:5001"
+    networks:
+      - my-net
+
+  books:
+    container_name: book_service
+    build: ./book
+    ports:
+      - "5002:5002"
+    networks:
+      - my-net
+
+  borrow:
+    container_name: borrow_service
+    build: ./borrow
+    ports:
+      - "5003:5003"
+    networks:
+      - my-net  
+
+  appservice:
+    container_name: frontend
+    build: .
+    ports:
+      - "5000:5000"
+    networks:
+      - my-net      
+
+volumes:
+  db-volume:
+
+networks:
+  my-net:
+    driver: bridge
+
+ 
