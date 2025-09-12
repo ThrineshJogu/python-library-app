@@ -1,6 +1,6 @@
 # Base image
 FROM python:3.9-slim
-
+EXPOSE 5003
 # Set working directory
 WORKDIR /app
 
